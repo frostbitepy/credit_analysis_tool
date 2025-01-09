@@ -49,9 +49,9 @@ def calcular_puntaje_antiguedad(antiguedad):
 def calcular_puntaje_activos(activos):
     activos_dict = {
         "ninguno": 5,
-        "vehiculo": 10,
+        "vehículo": 10,
         "inmueble": 15,
-        "vehiculo e inmueble": 20
+        "vehículo e inmueble": 20
     }
     return activos_dict.get(activos.lower(), 0)  # Retorna 0 si no coincide
 
@@ -126,19 +126,20 @@ def calcular_edad(fecha_nacimiento):
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    edad = 36
+    edad = 38
     ingresos = 15_000_000
     faja = "A"
-    antiguedad = "3 a 5 años"  # años
-    activos = "Vehiculo e Inmueble"
-    dti = 15  # porcentaje
+    antiguedad = "3 a 5 años"  
+    activos = "Vehículo e Inmueble"
+    deudas = 3360000
+    cuota = 416000
 
-    puntaje_final, recomendacion = calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, 3360000, 416000)
-    print(f"Puntaje Final: {puntaje_final:.2f}")
+    puntaje_final, recomendacion = calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, deudas, cuota)
+    print(f"Puntaje Final: {puntaje_final}")
     print(f"Dictamen Final: {recomendacion}")
     print(f"puntaje edad: {calcular_puntaje_edad(edad)}")
-    print(f"dti: {calcular_puntaje_dti(dti)}")
-    print(f"Activos: {calcular_puntaje_activos(activos)}")
+    print(f"puntaje dti: {calcular_puntaje_dti(calcular_dti(deudas, ingresos, cuota))}")
+    print(f"puntaje Activos: {calcular_puntaje_activos(activos)}")
     print(f"antiguedad: {calcular_puntaje_antiguedad(antiguedad)}")
     print(f"puntaje faja: {calcular_puntaje_faja(faja)}")
     print(f"puntaje ingresos: {calcular_puntaje_ingresos(ingresos)}")

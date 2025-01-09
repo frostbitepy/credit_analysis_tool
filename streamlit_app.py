@@ -16,7 +16,7 @@ opciones_garantia = ["ASF", "Hipotecaria", "Prendaria", "Codeudoría"]
 # Opciones validas para perfil comercial
 opciones_perfil_comercial = ['Asalariado', 'Profesional Independiente' ]
 # Opciones validas bienes
-opciones_bienes = ['No', 'Vehículo', 'Inmueble', 'Vehículo e Inmueble']
+opciones_bienes = ['No', 'Vehiculo', 'Inmueble', 'Vehiculo e Inmueble']
 
 
 # Título de la aplicación
@@ -47,12 +47,7 @@ st.header("Datos de Evaluación")
 col3, col4 = st.columns(2)
 with col3:
     ingresos = st.number_input("Ingresos", min_value=1, step=1, value=1)
-    antiguedad_laboral = st.selectbox("Antigüedad Laboral:", [
-        "6 meses a un año",
-        "1 a 2 años",
-        "3 a 5 años",
-        "Más de 5 años"
-    ])
+    antiguedad_laboral = st.selectbox("Antigüedad Laboral:", opciones_antiguedad)
 
 with col4:
     posee_bienes = st.selectbox("Posee Bienes", opciones_bienes)
@@ -98,8 +93,7 @@ if archivo_2:
 
 # Botón para calcular
 if st.button("Calcular Dictamen Final"):
-    # Simulación de parámetros adicionales
-
+    deudas = deuda_comercial+deuda_financiera
     # Llamada a la función de cálculo final
     puntaje, dictamen = calcular_calificacion_final(
         edad=edad,
@@ -107,7 +101,7 @@ if st.button("Calcular Dictamen Final"):
         faja=faja,
         antiguedad=antiguedad_laboral,
         activos=posee_bienes,
-        deudas=deuda_financiera+deuda_comercial,
+        deudas=deudas,
         cuota=cuota
     )
 
@@ -116,8 +110,12 @@ if st.button("Calcular Dictamen Final"):
     st.write(f"Puntaje Final: {puntaje}")
     st.write(f"Dictamen Final: {dictamen}")
     st.write(f"Nombre: {nombre}")
-    st.write(f"Edad: {edad}")
+    st.write(f"Edad: {edad} años")
     st.write(f"CI/RUC: {ci}")
     st.write(f"Ingresos: {ingresos}")
-    st.write(f"Deuda Total: {deuda_comercial+deuda_financiera}")
-    st.write(f"DTI: {calcular_dti((deuda_comercial+deuda_financiera), ingresos, cuota)}")
+    st.write(f"Faja Scoring: {faja}")
+    st.write(f"Antigüedad Laboral: {antiguedad_laboral}")
+    st.write(f"Posee Bienes: {posee_bienes}")
+    st.write(f"Deudas Totales: {deudas}")
+    st.write(f"Cuota Mensual: {cuota}")
+    st.write(f"DTI: {calcular_dti(deudas, ingresos, cuota)}")
