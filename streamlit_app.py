@@ -86,14 +86,14 @@ if archivo_1:
     df1 = pd.read_excel(archivo_1)
     st.write("Deuda Financiera:")
     st.dataframe(df1)  # Muestra las primeras filas para verificar
-    deuda_financiera = df1.iloc[:, 4].dropna().astype(float).sum()
+    deuda_financiera = df1.iloc[:, 5].dropna().astype(float).sum()
 
 archivo_2 = st.file_uploader("Subir Planilla de Deuda Comercial", type=["xlsx"])
 if archivo_2:
     df2 = pd.read_excel(archivo_2)
     st.write("Deuda Comercial:")
     st.dataframe(df2)  # Muestra las primeras filas para verificar
-    deuda_comercial = df2.iloc[:, 4].dropna().astype(float).sum()
+    deuda_comercial = df2.iloc[:, 5].dropna().astype(float).sum()
 
 
 # Botón para calcular
