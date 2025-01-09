@@ -1,5 +1,5 @@
 import streamlit as st
-from calculos import calcular_calificacion_final, calcular_edad
+from calculos import calcular_calificacion_final, calcular_edad, calcular_dti
 from datetime import datetime 
 import pandas as pd
 import openpyxl
@@ -99,7 +99,6 @@ if archivo_2:
 # Botón para calcular
 if st.button("Calcular Dictamen Final"):
     # Simulación de parámetros adicionales
-    dti = 30  # Ejemplo: ratio deuda/ingreso fijo
 
     # Llamada a la función de cálculo final
     puntaje, dictamen = calcular_calificacion_final(
@@ -121,3 +120,4 @@ if st.button("Calcular Dictamen Final"):
     st.write(f"CI/RUC: {ci}")
     st.write(f"Ingresos: {ingresos}")
     st.write(f"Deuda Total: {deuda_comercial+deuda_financiera}")
+    st.write(f"DTI: {calcular_dti((deuda_comercial+deuda_financiera), ingresos, cuota)}")

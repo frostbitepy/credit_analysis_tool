@@ -59,7 +59,7 @@ def calcular_puntaje_activos(activos):
 def calcular_dti(deudas, ingresos, cuota):
     if ingresos == 0:
         return 0
-    return (deudas+cuota)/ingresos
+    return ((deudas+cuota)/ingresos)*100 
 
 # Función para calcular el puntaje de ratio deuda/ingreso (DTI)
 def calcular_puntaje_dti(dti):
