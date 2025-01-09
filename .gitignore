@@ -3,3 +3,4 @@ formulario.html
 resultado.html
 venv/
 __pycache__/
+*.xlsx

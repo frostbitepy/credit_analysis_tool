@@ -1,7 +1,8 @@
 import streamlit as st
 from calculos import calcular_calificacion_final, calcular_edad
 from datetime import datetime 
-
+import pandas as pd
+import openpyxl
 
 # Opciones válidas para la antigüedad laboral
 opciones_antiguedad = [
@@ -54,7 +55,7 @@ with col3:
     ])
 
 with col4:
-    posee_bienes = st.selectbox("Posee Bienes", ["Sí", "No"])
+    posee_bienes = st.selectbox("Posee Bienes", opciones_bienes)
     empresa = st.text_input("Empresa")
     faja = st.text_input("Faja Scoring Informconf")
 
@@ -76,6 +77,23 @@ with col6:
     garantia = st.selectbox("Seleccione el tipo de garantía:", opciones_garantia)
 
 
+# Sección: Subir Planillas Excel
+st.header("Cargar Planillas Excel")
+col1, col2 = st.columns(2)
+
+archivo_1 = st.file_uploader("Subir Planilla de Deuda Financiera", type=["xlsx"])
+if archivo_1:
+    df1 = pd.read_excel(archivo_1)
+    st.write("Deuda Financiera:")
+    st.dataframe(df1)  # Muestra las primeras filas para verificar
+    deuda_financiera = df1.iloc[:, 4].dropna().astype(float).sum()
+
+archivo_2 = st.file_uploader("Subir Planilla de Deuda Comercial", type=["xlsx"])
+if archivo_2:
+    df2 = pd.read_excel(archivo_2)
+    st.write("Deuda Comercial:")
+    st.dataframe(df2)  # Muestra las primeras filas para verificar
+    deuda_comercial = df2.iloc[:, 4].dropna().astype(float).sum()
 
 
 # Botón para calcular
@@ -90,10 +108,15 @@ if st.button("Calcular Dictamen Final"):
         faja=faja,
         antiguedad=antiguedad_laboral,
         activos=posee_bienes,
-        dti=dti
+        deudas=deuda_financiera+deuda_comercial
     )
 
     # Mostrar resultados
     st.subheader("Resultado de la Evaluación")
     st.write(f"Puntaje Final: {puntaje}")
     st.write(f"Dictamen Final: {dictamen}")
+    st.write(f"Nombre: {nombre}")
+    st.write(f"Edad: {edad}")
+    st.write(f"CI/RUC: {ci}")
+    st.write(f"Ingresos: {ingresos}")
+    st.write(f"Deuda Total: {deuda_comercial+deuda_financiera}")
