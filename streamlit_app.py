@@ -46,7 +46,7 @@ st.header("Datos de Evaluación")
 
 col3, col4 = st.columns(2)
 with col3:
-    ingresos = st.number_input("Ingresos", min_value=0, step=1)
+    ingresos = st.number_input("Ingresos", min_value=1, step=1, value=1)
     antiguedad_laboral = st.selectbox("Antigüedad Laboral:", [
         "6 meses a un año",
         "1 a 2 años",
@@ -108,7 +108,8 @@ if st.button("Calcular Dictamen Final"):
         faja=faja,
         antiguedad=antiguedad_laboral,
         activos=posee_bienes,
-        deudas=deuda_financiera+deuda_comercial
+        deudas=deuda_financiera+deuda_comercial,
+        cuota=cuota
     )
 
     # Mostrar resultados

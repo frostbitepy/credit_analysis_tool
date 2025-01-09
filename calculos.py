@@ -56,10 +56,10 @@ def calcular_puntaje_activos(activos):
     return activos_dict.get(activos.lower(), 0)  # Retorna 0 si no coincide
 
 
-def calcular_dti(deudas, ingresos):
+def calcular_dti(deudas, ingresos, cuota):
     if ingresos == 0:
-        return "N/A"
-    return deudas/ingresos
+        return 0
+    return (deudas+cuota)/ingresos
 
 # Función para calcular el puntaje de ratio deuda/ingreso (DTI)
 def calcular_puntaje_dti(dti):
@@ -75,7 +75,7 @@ def calcular_puntaje_dti(dti):
         return 0
 
 # Función para calcular la calificación final
-def calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, deudas):
+def calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, deudas, cuota):
     ponderaciones = {
         "edad": 0.10,
         "ingresos": 0.20,
@@ -91,7 +91,7 @@ def calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, deuda
     puntaje_faja = calcular_puntaje_faja(faja) * ponderaciones["faja"]
     puntaje_antiguedad = calcular_puntaje_antiguedad(antiguedad) * ponderaciones["antiguedad"]
     puntaje_activos = calcular_puntaje_activos(activos) * ponderaciones["activos"]
-    puntaje_dti = calcular_puntaje_dti(calcular_dti(deudas, ingresos)) * ponderaciones["dti"]
+    puntaje_dti = calcular_puntaje_dti(calcular_dti(deudas, ingresos, cuota)) * ponderaciones["dti"]
     
     # Sumar los puntajes ponderados
     puntaje_total = sum([
