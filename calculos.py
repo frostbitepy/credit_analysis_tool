@@ -1,3 +1,5 @@
+from datetime import date
+
 # Función para calcular el puntaje de edad
 def calcular_puntaje_edad(edad):
     if 20 <= edad <= 25:
@@ -25,28 +27,31 @@ def calcular_puntaje_ingresos(ingresos):
 # Función para calcular el puntaje de faja
 def calcular_puntaje_faja(faja):
     faja_dict = {"M-N": 5, "I-L": 10, "E-H": 15, "A-D": 20}
-    return faja_dict.get(faja.upper(), 0)  # Retorna 0 si no coincide
+    faja = faja.upper()  # Convertir la letra a mayúscula para consistencia
+    for rango, puntaje in faja_dict.items():
+        inicio, fin = rango.split("-")  # Dividir el rango en inicio y fin
+        if inicio <= faja <= fin:  # Verificar si la letra está en el rango
+            return puntaje
+    return 0  # Retornar 0 si no pertenece a ningún rango
 
 # Función para calcular el puntaje de antigüedad laboral
-def calcular_puntaje_antiguedad(antiguedad_en_anos):
-    if antiguedad_en_anos < 0.5:
-        return 0
-    elif 0.5 <= antiguedad_en_anos < 1:
-        return 5
-    elif 1 <= antiguedad_en_anos < 2:
-        return 10
-    elif 2 <= antiguedad_en_anos <= 5:
-        return 15
-    else:  # antiguedad > 5 años
-        return 20
+def calcular_puntaje_antiguedad(antiguedad):
+    puntajes = {
+        "6 meses a un año": 5,
+        "1 a 2 años": 10,
+        "3 a 5 años": 15,
+        "Más de 5 años": 20
+    }
+    
+    return puntajes.get(antiguedad, 0)  # Retorna 0 si el parámetro no coincide con ninguna clave
 
 # Función para calcular el puntaje de activos
 def calcular_puntaje_activos(activos):
     activos_dict = {
-        "ninguno": 5,
-        "vehiculo": 10,
-        "inmueble": 15,
-        "vehiculo e inmueble": 20
+        "Ninguno": 5,
+        "Vehiculo": 10,
+        "Inmueble": 15,
+        "Vehiculo e Inmueble": 20
     }
     return activos_dict.get(activos.lower(), 0)  # Retorna 0 si no coincide
 
@@ -103,6 +108,15 @@ def calcular_calificacion_final(edad, ingresos, faja, antiguedad, activos, dti):
         recomendacion = "No definido"
     
     return puntaje_total, recomendacion
+
+
+
+# Función para calcular la edad
+def calcular_edad(fecha_nacimiento):
+    hoy = date.today()
+    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    return edad
+
 
 # Ejemplo de uso
 if __name__ == "__main__":

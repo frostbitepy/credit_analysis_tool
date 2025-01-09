@@ -1,47 +1,86 @@
 import streamlit as st
-from calculos import calcular_calificacion_final
+from calculos import calcular_calificacion_final, calcular_edad
 from datetime import datetime 
+
+
+# Opciones válidas para la antigüedad laboral
+opciones_antiguedad = [
+    "6 meses a un año",
+    "1 a 2 años",
+    "3 a 5 años",
+    "Más de 5 años"
+]
+# Opciones válidas para la garantía
+opciones_garantia = ["ASF", "Hipotecaria", "Prendaria", "Codeudoría"]
+# Opciones validas para perfil comercial
+opciones_perfil_comercial = ['Asalariado', 'Profesional Independiente' ]
+# Opciones validas bienes
+opciones_bienes = ['No', 'Vehículo', 'Inmueble', 'Vehículo e Inmueble']
+
 
 # Título de la aplicación
 st.title("Evaluación Financiera - Dictamen Final")
 
 # Sección: Datos del Cliente
 st.header("Datos del Cliente")
-persona = st.selectbox("Persona", ['física', 'jurídica'])
-# Mostrar perfil comercial solo si persona es "física"
-perfil_comercial = None
-if persona == 'física':
-    perfil_comercial = st.selectbox("Perfil Comercial", ['asalariado', 'profesional independiente', 'empresario'])
-nombre = st.text_input("Nombre")
-apellido = st.text_input("Apellido")
-fecha_nacimiento = st.date_input("Fecha de Nacimiento", format="DD/MM/YYYY")
-ci = st.text_input("Cédula de Identidad")
+
+col1, col2 = st.columns(2)
+with col1:
+    persona = st.selectbox("Persona", ['Física', 'Jurídica'])
+    nombre = st.text_input("Nombre y Apellido")
+    ci = st.text_input("Cédula de Identidad/RUC")
+
+with col2:
+    # Mostrar perfil comercial solo si persona es "física"
+    if persona == 'Física':
+        perfil_comercial = st.selectbox("Perfil Comercial", opciones_perfil_comercial)
+    fecha_nacimiento = st.date_input("Fecha de Nacimiento/Constitución", format="DD/MM/YYYY")
+    # Calcular y mostrar la edad debajo de la fecha de nacimiento
+    if fecha_nacimiento:
+        edad = calcular_edad(fecha_nacimiento)
+        st.write(f"Edad: {edad} años")
 
 # Sección: Datos de Evaluación
 st.header("Datos de Evaluación")
-ingresos = st.number_input("Ingresos (en millones)", min_value=0, step=1)
-posee_bienes = st.selectbox("Posee Bienes", ['no', 'vehículo', 'inmueble', 'vehículo e inmueble'])
-antiguedad_laboral = st.number_input("Antigüedad Laboral (en años)", min_value=0, step=1)
+
+col3, col4 = st.columns(2)
+with col3:
+    ingresos = st.number_input("Ingresos", min_value=0, step=1)
+    antiguedad_laboral = st.selectbox("Antigüedad Laboral:", [
+        "6 meses a un año",
+        "1 a 2 años",
+        "3 a 5 años",
+        "Más de 5 años"
+    ])
+
+with col4:
+    posee_bienes = st.selectbox("Posee Bienes", ["Sí", "No"])
+    empresa = st.text_input("Empresa")
+    faja = st.text_input("Faja Scoring Informconf")
 
 # Sección: Datos de Operación
 st.header("Datos Operación")
-producto = st.selectbox(
-    "Seleccione un Producto",
-    ["Producto 1", "Producto 2", "Producto 3"],
-    index=0  # Opción seleccionada por defecto
-)
-monto_solicitado = st.number_input("Monto Solicitado", min_value=1, step=1, value=1)
-plazo = st.number_input("Plazo (meses)", min_value=1, step=1, value=12)
-garantia = st.number_input("Garantía", min_value=0, step=1, value=1)
-cuota = st.number_input("Cuota", min_value=0.0, step=0.01, value=1.0)
+
+col5, col6 = st.columns(2)
+with col5:
+    producto = st.selectbox(
+        "Seleccione un Producto",
+        ["Producto 1", "Producto 2", "Producto 3"],
+        index=0
+    )
+    monto_solicitado = st.number_input("Monto Solicitado", min_value=1, step=1, value=1)
+    cuota = st.number_input("Cuota", min_value=0, step=1, value=1)
+
+with col6:
+    plazo = st.number_input("Plazo (meses)", min_value=1, step=1, value=12)
+    garantia = st.selectbox("Seleccione el tipo de garantía:", opciones_garantia)
+
 
 
 
 # Botón para calcular
 if st.button("Calcular Dictamen Final"):
     # Simulación de parámetros adicionales
-    edad = 30  # Ejemplo: edad fija
-    faja = 'I-L'  # Ejemplo: rango de scoring fijo
     dti = 30  # Ejemplo: ratio deuda/ingreso fijo
 
     # Llamada a la función de cálculo final
