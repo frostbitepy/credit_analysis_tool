@@ -16,7 +16,7 @@ opciones_garantia = ["ASF", "Hipotecaria", "Prendaria", "Codeudoría"]
 # Opciones validas para perfil comercial
 opciones_perfil_comercial = ['Asalariado', 'Profesional Independiente' ]
 # Opciones validas bienes
-opciones_bienes = ['No', 'Vehiculo', 'Inmueble', 'Vehiculo e Inmueble']
+opciones_bienes = ['No', 'Vehículo', 'Inmueble', 'Vehículo e Inmueble']
 
 
 # Título de la aplicación
