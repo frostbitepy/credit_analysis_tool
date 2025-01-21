@@ -1,24 +1,7 @@
 from fpdf import FPDF
 from io import BytesIO
 
-def generate_pdf(nombre, edad, dti):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt=f"Nombre: {nombre}", ln=True)
-    pdf.cell(200, 10, txt=f"Edad: {edad}", ln=True)
-    pdf.cell(200, 10, txt=f"DTI: {dti}", ln=True)
-    
-    pdf_buffer = BytesIO()
-    pdf_output = pdf.output(dest='S').encode('latin1')  # Get PDF content as string
-    pdf_buffer.write(pdf_output)
-    pdf_buffer.seek(0)
-    return pdf_buffer
-    
-from fpdf import FPDF
-from io import BytesIO
-
-def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa, perfil_comercial, producto, monto_solicitado, plazo, cuota, garantia, scoring, deuda_financiera, deuda_comercial, ratio_deuda_ingresos):
+def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa, perfil_comercial, producto, monto_solicitado, plazo, cuota, garantia, scoring, deuda_financiera, deuda_comercial, ratio_deuda_ingresos, puntaje, dictamen):
     pdf = FPDF()
     pdf.add_page()
     
@@ -64,6 +47,16 @@ def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa
     pdf.cell(100, 10, f"Deuda financiera: {deuda_financiera}", 0, 1, 'L')
     pdf.cell(100, 10, f"Deuda comercial: {deuda_comercial}", 0, 1, 'L')
     pdf.cell(100, 10, f"Ratio deuda/ingresos: {ratio_deuda_ingresos}", 0, 1, 'L')
+    
+    # Calificación final
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "Calificación Final:", 0, 1, 'L')
+    pdf.set_font("Arial", 'U', 12)
+    pdf.cell(0, 0, "", 0, 1, 'L')
+    
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(100, 10, f"Puntaje: {puntaje}", 0, 1, 'L')
+    pdf.cell(100, 10, f"Dictamen: {dictamen}", 0, 1, 'L')
     
     pdf_buffer = BytesIO()
     pdf_output = pdf.output(dest='S').encode('latin1')  # Get PDF content as string

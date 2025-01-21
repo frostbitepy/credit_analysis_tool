@@ -1,7 +1,7 @@
 import streamlit as st
 from calculos import calcular_calificacion_final, calcular_edad, calcular_dti
 from datetime import datetime 
-from pdf_helper import generate_pdf, generate_detailed_pdf
+from pdf_helper import generate_detailed_pdf
 from io import BytesIO
 import pandas as pd
 import openpyxl
@@ -109,9 +109,10 @@ if st.button("Calcular Dictamen Final y Generar PDF"):
         scoring=faja,
         deuda_financiera=deuda_financiera,
         deuda_comercial=deuda_comercial,
-        ratio_deuda_ingresos=st.session_state['resultado']['dti']
+        ratio_deuda_ingresos=st.session_state['resultado']['dti'],
+        puntaje=puntaje,
+        dictamen=dictamen
     )
-
     st.download_button(
         label="Download PDF",
         data=pdf_buffer,
