@@ -1,100 +1,80 @@
 import streamlit as st
 from calculos import calcular_calificacion_final, calcular_edad, calcular_dti
 from datetime import datetime 
+from pdf_helper import generate_pdf, generate_detailed_pdf
+from io import BytesIO
 import pandas as pd
 import openpyxl
 
-# Opciones válidas para la antigüedad laboral
-opciones_antiguedad = [
-    "6 meses a un año",
-    "1 a 2 años",
-    "3 a 5 años",
-    "Más de 5 años"
-]
-# Opciones válidas para la garantía
+# Opciones válidas
+opciones_antiguedad = ["6 meses a un año", "1 a 2 años", "3 a 5 años", "Más de 5 años"]
 opciones_garantia = ["ASF", "Hipotecaria", "Prendaria", "Codeudoría"]
-# Opciones validas para perfil comercial
-opciones_perfil_comercial = ['Asalariado', 'Profesional Independiente' ]
-# Opciones validas bienes
+opciones_perfil_comercial = ['Asalariado', 'Profesional Independiente']
 opciones_bienes = ['No', 'Vehículo', 'Inmueble', 'Vehículo e Inmueble']
-
 
 # Título de la aplicación
 st.title("Evaluación Financiera - Dictamen Final")
 
-# Sección: Datos del Cliente
+# Datos del Cliente
 st.header("Datos del Cliente")
-
 col1, col2 = st.columns(2)
 with col1:
     persona = st.selectbox("Persona", ['Física', 'Jurídica'])
     nombre = st.text_input("Nombre y Apellido")
     ci = st.text_input("Cédula de Identidad/RUC")
-
 with col2:
-    # Mostrar perfil comercial solo si persona es "física"
     if persona == 'Física':
         perfil_comercial = st.selectbox("Perfil Comercial", opciones_perfil_comercial)
     fecha_nacimiento = st.date_input("Fecha de Nacimiento/Constitución", format="DD/MM/YYYY")
-    # Calcular y mostrar la edad debajo de la fecha de nacimiento
     if fecha_nacimiento:
         edad = calcular_edad(fecha_nacimiento)
         st.write(f"Edad: {edad} años")
 
-# Sección: Datos de Evaluación
+# Datos de Evaluación
 st.header("Datos de Evaluación")
-
 col3, col4 = st.columns(2)
 with col3:
     ingresos = st.number_input("Ingresos", min_value=1, step=1, value=1)
     antiguedad_laboral = st.selectbox("Antigüedad Laboral:", opciones_antiguedad)
-
 with col4:
     posee_bienes = st.selectbox("Posee Bienes", opciones_bienes)
     empresa = st.text_input("Empresa")
     faja = st.text_input("Faja Scoring Informconf")
 
-# Sección: Datos de Operación
+# Datos de Operación
 st.header("Datos Operación")
-
 col5, col6 = st.columns(2)
 with col5:
-    producto = st.selectbox(
-        "Seleccione un Producto",
-        ["Producto 1", "Producto 2", "Producto 3"],
-        index=0
-    )
+    producto = st.selectbox("Seleccione un Producto", ["Producto 1", "Producto 2", "Producto 3"], index=0)
     monto_solicitado = st.number_input("Monto Solicitado", min_value=1, step=1, value=1)
     cuota = st.number_input("Cuota", min_value=0, step=1, value=1)
-
 with col6:
     plazo = st.number_input("Plazo (meses)", min_value=1, step=1, value=12)
     garantia = st.selectbox("Seleccione el tipo de garantía:", opciones_garantia)
 
-
-# Sección: Subir Planillas Excel
+# Subir Planillas Excel
 st.header("Cargar Planillas Excel")
-col1, col2 = st.columns(2)
-
 archivo_1 = st.file_uploader("Subir Planilla de Deuda Financiera", type=["xlsx"])
 if archivo_1:
     df1 = pd.read_excel(archivo_1)
     st.write("Deuda Financiera:")
-    st.dataframe(df1)  # Muestra las primeras filas para verificar
+    st.dataframe(df1)
     deuda_financiera = df1.iloc[:, 5].dropna().astype(float).sum()
+else:
+    deuda_financiera = 0
 
 archivo_2 = st.file_uploader("Subir Planilla de Deuda Comercial", type=["xlsx"])
 if archivo_2:
     df2 = pd.read_excel(archivo_2)
     st.write("Deuda Comercial:")
-    st.dataframe(df2)  # Muestra las primeras filas para verificar
+    st.dataframe(df2)
     deuda_comercial = df2.iloc[:, 5].dropna().astype(float).sum()
+else:
+    deuda_comercial = 0
 
-
-# Botón para calcular
-if st.button("Calcular Dictamen Final"):
-    deudas = deuda_comercial+deuda_financiera
-    # Llamada a la función de cálculo final
+# Botón para calcular y generar PDF
+if st.button("Calcular Dictamen Final y Generar PDF"):
+    deudas = deuda_comercial + deuda_financiera
     puntaje, dictamen = calcular_calificacion_final(
         edad=edad,
         ingresos=ingresos,
@@ -105,17 +85,45 @@ if st.button("Calcular Dictamen Final"):
         cuota=cuota
     )
 
-    # Mostrar resultados
+    # Guardar resultados en session_state
+    st.session_state['resultado'] = {
+        "puntaje": puntaje,
+        "dictamen": dictamen,
+        "deudas": deudas,
+        "dti": calcular_dti(deudas, ingresos, cuota)
+    }
+
+    # Generar PDF detallado
+    pdf_buffer = generate_detailed_pdf(
+        nombre=nombre,
+        profesion=perfil_comercial,
+        ingresos=ingresos,
+        fecha_nacimiento=fecha_nacimiento,
+        empresa=empresa,
+        perfil_comercial=perfil_comercial,
+        producto=producto,
+        monto_solicitado=monto_solicitado,
+        plazo=plazo,
+        cuota=cuota,
+        garantia=garantia,
+        scoring=faja,
+        deuda_financiera=deuda_financiera,
+        deuda_comercial=deuda_comercial,
+        ratio_deuda_ingresos=st.session_state['resultado']['dti']
+    )
+
+    st.download_button(
+        label="Download PDF",
+        data=pdf_buffer,
+        file_name="financial_report.pdf",
+        mime="application/pdf"
+    )
+
+# Mostrar resultados si están guardados
+if 'resultado' in st.session_state:
     st.subheader("Resultado de la Evaluación")
-    st.write(f"Puntaje Final: {puntaje}")
-    st.write(f"Dictamen Final: {dictamen}")
-    st.write(f"Nombre: {nombre}")
-    st.write(f"Edad: {edad} años")
-    st.write(f"CI/RUC: {ci}")
-    st.write(f"Ingresos: {ingresos}")
-    st.write(f"Faja Scoring: {faja}")
-    st.write(f"Antigüedad Laboral: {antiguedad_laboral}")
-    st.write(f"Posee Bienes: {posee_bienes}")
-    st.write(f"Deudas Totales: {deudas}")
-    st.write(f"Cuota Mensual: {cuota}")
-    st.write(f"DTI: {calcular_dti(deudas, ingresos, cuota)}")
+    resultado = st.session_state['resultado']
+    st.write(f"Puntaje Final: {resultado['puntaje']}")
+    st.write(f"Dictamen Final: {resultado['dictamen']}")
+    st.write(f"Deudas Totales: {resultado['deudas']}")
+    st.write(f"DTI: {resultado['dti']}")
