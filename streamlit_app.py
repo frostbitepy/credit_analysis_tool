@@ -54,7 +54,7 @@ with col6:
 
 # Subir Planillas Excel
 st.header("Cargar Planillas Excel")
-archivo_1 = st.file_uploader("Subir Planilla de Deuda Financiera", type=["xlsx"])
+archivo_1 = st.file_uploader("Subir Planilla de Deudas", type=["xlsx"])
 if archivo_1:
     df1 = pd.read_excel(archivo_1)
     st.write("Deuda Financiera:")
@@ -63,18 +63,12 @@ if archivo_1:
 else:
     deuda_financiera = 0
 
-archivo_2 = st.file_uploader("Subir Planilla de Deuda Comercial", type=["xlsx"])
-if archivo_2:
-    df2 = pd.read_excel(archivo_2)
-    st.write("Deuda Comercial:")
-    st.dataframe(df2)
-    deuda_comercial = df2.iloc[:, 5].dropna().astype(float).sum()
-else:
-    deuda_comercial = 0
+# Comentarios
+comentarios = st.text_area("Comentarios")
 
 # Botón para calcular y generar PDF
 if st.button("Calcular Dictamen Final y Generar PDF"):
-    deudas = deuda_comercial + deuda_financiera
+    deudas = deuda_financiera
     puntaje, dictamen = calcular_calificacion_final(
         edad=edad,
         ingresos=ingresos,
@@ -108,10 +102,10 @@ if st.button("Calcular Dictamen Final y Generar PDF"):
         garantia=garantia,
         scoring=faja,
         deuda_financiera=deuda_financiera,
-        deuda_comercial=deuda_comercial,
         ratio_deuda_ingresos=st.session_state['resultado']['dti'],
         puntaje=puntaje,
-        dictamen=dictamen
+        dictamen=dictamen,
+        comentarios=comentarios
     )
     st.download_button(
         label="Download PDF",

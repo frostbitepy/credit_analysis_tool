@@ -1,7 +1,7 @@
 from fpdf import FPDF
 from io import BytesIO
 
-def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa, perfil_comercial, producto, monto_solicitado, plazo, cuota, garantia, scoring, deuda_financiera, deuda_comercial, ratio_deuda_ingresos, puntaje, dictamen):
+def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa, perfil_comercial, producto, monto_solicitado, plazo, cuota, garantia, scoring, deuda_financiera, ratio_deuda_ingresos, puntaje, dictamen, comentarios):
     pdf = FPDF()
     pdf.add_page()
     
@@ -44,8 +44,7 @@ def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa
     
     pdf.set_font("Arial", '', 12)
     pdf.cell(100, 10, f"Scoring: {scoring}", 0, 1, 'L')
-    pdf.cell(100, 10, f"Deuda financiera: {deuda_financiera}", 0, 1, 'L')
-    pdf.cell(100, 10, f"Deuda comercial: {deuda_comercial}", 0, 1, 'L')
+    pdf.cell(100, 10, f"Deudas: {deuda_financiera}", 0, 1, 'L')
     pdf.cell(100, 10, f"Ratio deuda/ingresos: {ratio_deuda_ingresos}", 0, 1, 'L')
     
     # Calificación final
@@ -57,6 +56,12 @@ def generate_detailed_pdf(nombre, profesion, ingresos, fecha_nacimiento, empresa
     pdf.set_font("Arial", '', 12)
     pdf.cell(100, 10, f"Puntaje: {puntaje}", 0, 1, 'L')
     pdf.cell(100, 10, f"Dictamen: {dictamen}", 0, 1, 'L')
+
+    # Comentarios
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "Comentarios:", 0, 1, 'L')
+    pdf.set_font("Arial", '', 12)
+    pdf.multi_cell(0, 10, comentarios)
     
     pdf_buffer = BytesIO()
     pdf_output = pdf.output(dest='S').encode('latin1')  # Get PDF content as string
