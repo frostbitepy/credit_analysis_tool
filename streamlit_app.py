@@ -1,7 +1,7 @@
 import streamlit as st
 from calculos import calcular_calificacion_final, calcular_edad, calcular_dti
 from datetime import datetime 
-from pdf_helper import generate_detailed_pdf
+from pdf_maker import generate_detailed_pdf
 from io import BytesIO
 import pandas as pd
 import openpyxl

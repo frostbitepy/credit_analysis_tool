@@ -4,3 +4,5 @@ resultado.html
 venv/
 __pycache__/
 *.xlsx
+*.pfg
+
